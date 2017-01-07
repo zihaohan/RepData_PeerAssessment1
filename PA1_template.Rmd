@@ -2,7 +2,9 @@
 title: 'Peer-graded Assignment: Course Project 1'
 author: "Zihaohan Sang"
 date: "January 7, 2017"
-output: html_document
+output: 
+  html_document: 
+    keep_md: true 
 ---
 
 This courses project is for coursera course:Reproducible Research, week 2.
@@ -109,4 +111,5 @@ newbyinterval <- byweekday %>% group_by(interval, weekday) %>% summarise(avg = m
 ggplot(aes(x = interval, y = avg, col = weekday), data = newbyinterval) + geom_line() + facet_grid(weekday~.) + labs(x = "Interval", y = "Number of steps") + theme_classic()
 
 ```
+knit2html()
 
