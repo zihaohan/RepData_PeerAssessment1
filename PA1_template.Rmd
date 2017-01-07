@@ -102,6 +102,7 @@ for (i in 1:nrow(byweekday)){
 
 head(byweekday, 10)
 
+##use the new dataset for interval analysis
 newbyinterval <- byweekday %>% group_by(interval, weekday) %>% summarise(avg = mean(steps))
 
 ggplot(aes(x = interval, y = avg, col = weekday), data = newbyinterval) + geom_line() + facet_grid(weekday~.) + labs(x = "Interval", y = "Number of steps") + theme_classic()
