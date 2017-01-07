@@ -14,10 +14,11 @@ output:
 require(dplyr)
 rawdata <- read.csv("activity.csv")
 ##casue the NA in rawdata set, and the date as variable, so the enxt step is to tidy the data set
- rawdata$date <- as.Date(rawdata$date)
- processed <- na.omit(rawdata)
- head(processed, 10)
- ##then we can use the processed data set to answer the following questions 
+ 
+rawdata$date <- as.Date(rawdata$date)
+processed <- na.omit(rawdata)
+head(processed, 10)
+##then we can use the processed data set to answer the following questions 
 ```
 
 
@@ -58,6 +59,7 @@ byinterval[which.max(byinterval$avg), ]
 
 
 ## Imputing missing values
+
 ```{r imputing_na, echo=TRUE}
 
 ## caluculate the total number of NA 
@@ -86,6 +88,7 @@ summary(newbyday$sum)[3:4]
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
 ```{r activity_weekday_pattern, echo = TRUE}
 byweekday <- newdata %>% mutate(wday = weekdays(date), weekday = 0)
 
