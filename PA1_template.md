@@ -1,6 +1,11 @@
-# Peer-graded Assignment: Course Project 1
-Zihaohan Sang  
-January 7, 2017  
+---
+title: 'Peer-graded Assignment: Course Project 1'
+author: "Zihaohan Sang"
+date: "January 7, 2017"
+output: 
+  html_document: 
+    keep_md: true 
+---
 
 This courses project is for coursera course:Reproducible Research, week 2.
 
@@ -16,30 +21,6 @@ First, code for reading in the dataset and processing the data
 
 ```r
 require(dplyr)
-```
-
-```
-## Loading required package: dplyr
-```
-
-```
-## 
-## Attaching package: 'dplyr'
-```
-
-```
-## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-```
-
-```r
 rawdata <- read.csv("activity.csv")
 ##casue the NA in rawdata set, and the date as variable, so the enxt step is to tidy the data set
  rawdata$date <- as.Date(rawdata$date)
@@ -76,7 +57,7 @@ head(bydate, 10)
 ```
 
 ```
-## # A tibble: 10 Ã— 2
+## # A tibble: 10 × 2
 ##          date   sum
 ##        <date> <int>
 ## 1  2012-10-02   126
@@ -94,13 +75,6 @@ head(bydate, 10)
 ```r
 ##plot the histogram
 require(ggplot2)
-```
-
-```
-## Loading required package: ggplot2
-```
-
-```r
 ggplot(aes(x = sum), data = bydate) + geom_histogram() + labs(x = "Total number of steps per day", y = "frequency", title = "Histogram of The Total Number of Steps \nTaken Each Day") + theme_bw() + theme(plot.title = element_text(hjust = 0.5, vjust = 1, size = rel(1.2), face = "bold"), panel.border = element_blank(), panel.grid = element_blank(), axis.line = element_line(color = "black", size = 0.8))
 ```
 
@@ -108,7 +82,7 @@ ggplot(aes(x = sum), data = bydate) + geom_histogram() + labs(x = "Total number 
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/hist_total_steps_per_day-1.png)<!-- -->
+![plot of chunk hist_total_steps_per_day](figure/hist_total_steps_per_day-1.png)
 
 Then, Mean and median number of steps taken each day
 
@@ -133,7 +107,7 @@ head(byinterval)
 ```
 
 ```
-## # A tibble: 6 Ã— 2
+## # A tibble: 6 × 2
 ##   interval       avg
 ##      <int>     <dbl>
 ## 1        0 1.7169811
@@ -148,7 +122,7 @@ head(byinterval)
 ggplot(aes(x = interval, y = avg), data =  byinterval) + geom_line() +labs(x = "Interval", y = "Average number of steps taken") + theme_classic()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
 
 
 
@@ -157,7 +131,7 @@ byinterval[which.max(byinterval$avg), ]
 ```
 
 ```
-## # A tibble: 1 Ã— 2
+## # A tibble: 1 × 2
 ##   interval      avg
 ##      <int>    <dbl>
 ## 1      835 206.1698
@@ -193,7 +167,7 @@ newbyday <- newdata %>% group_by(date) %>% summarise(sum = sum(steps))
 hist(newbyday$sum, xlab = "total number of steps taken", main = "Histogram of the total number of steps taken each day")
 ```
 
-![](PA1_template_files/figure-html/imputing_na-1.png)<!-- -->
+![plot of chunk imputing_na](figure/imputing_na-1.png)
 
 ```r
 ## the mean and median of the total number of steps taken per day
@@ -243,6 +217,6 @@ newbyinterval <- byweekday %>% group_by(interval, weekday) %>% summarise(avg = m
 ggplot(aes(x = interval, y = avg, col = weekday), data = newbyinterval) + geom_line() + facet_grid(weekday~.) + labs(x = "Interval", y = "Number of steps") + theme_classic()
 ```
 
-![](PA1_template_files/figure-html/activity_weekday_pattern-1.png)<!-- -->
-knit2html()
+![plot of chunk activity_weekday_pattern](figure/activity_weekday_pattern-1.png)
+
 
