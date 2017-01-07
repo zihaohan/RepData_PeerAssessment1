@@ -1,30 +1,34 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: 'Peer-graded Assignment: Course Project 1'
 author: "Zihaohan Sang"
 date: "January 7, 2017"
-output: 
-  html_document:
-    keep_md: true
+output: html_document
 ---
 
+This courses project is for coursera course:Reproducible Research, week 2.
 
-## Loading and preprocessing the data
+The original data is from the course web site:activity.csv  
+The variables included in this dataset are:  
+1. **steps**: Number of steps taking in a 5-minute interval(missing values are coded as **NA**)  
+2. **date**: The date on which the measurement was taken in "%Y-%m-%d" format  
+3. **interval**: Identifier for the 5-minute interval in which measurement was taken  
+
+##Loading and preprocessing the data
+First, code for reading in the dataset and processing the data
 
 ```{r read_and_processing_data, echo=TRUE}
 require(dplyr)
 rawdata <- read.csv("activity.csv")
 ##casue the NA in rawdata set, and the date as variable, so the enxt step is to tidy the data set
- 
-rawdata$date <- as.Date(rawdata$date)
-processed <- na.omit(rawdata)
-head(processed, 10)
-##then we can use the processed data set to answer the following questions 
+ rawdata$date <- as.Date(rawdata$date)
+ processed <- na.omit(rawdata)
+ head(processed, 10)
+ ##then we can use the processed data set to answer the following questions 
 ```
 
 
-## What is mean total number of steps taken per day?
+##What is mean total number of steps taken per day?
 Next, Histogram of the total number of steps taken each day
-
 ```{r hist_total_steps_per_day, echo=TRUE}
 bydate <- processed %>% group_by(date) %>% summarise(sum = sum(steps))
 
@@ -33,15 +37,16 @@ head(bydate, 10)
 require(ggplot2)
 ggplot(aes(x = sum), data = bydate) + geom_histogram() + labs(x = "Total number of steps per day", y = "frequency", title = "Histogram of The Total Number of Steps \nTaken Each Day") + theme_bw() + theme(plot.title = element_text(hjust = 0.5, vjust = 1, size = rel(1.2), face = "bold"), panel.border = element_blank(), panel.grid = element_blank(), axis.line = element_line(color = "black", size = 0.8))
 ```
-Then, Mean and median number of steps taken each day
 
+Then, Mean and median number of steps taken each day
 ```{r mean_and_median_number, echo = TRUE}
 summary(bydate$sum)[3:4]
 
 ```
 
 
-## What is the average daily activity pattern?
+##What is the average daily activity pattern?
+
 
 ```{r, echo=TRUE}
 byinterval <- processed %>% group_by(interval) %>% summarise(avg = mean(steps))
@@ -56,9 +61,7 @@ ggplot(aes(x = interval, y = avg), data =  byinterval) + geom_line() +labs(x = "
 byinterval[which.max(byinterval$avg), ]
 ```
 
-
-
-## Imputing missing values
+##Imputing missing values
 
 ```{r imputing_na, echo=TRUE}
 
@@ -87,8 +90,7 @@ summary(newbyday$sum)[3:4]
 ```
 
 
-## Are there differences in activity patterns between weekdays and weekends?
-
+##Are there differences in activity patterns between weekdays and weekends?
 ```{r activity_weekday_pattern, echo = TRUE}
 byweekday <- newdata %>% mutate(wday = weekdays(date), weekday = 0)
 
@@ -102,9 +104,9 @@ for (i in 1:nrow(byweekday)){
 
 head(byweekday, 10)
 
-##use the new dataset for interval analysis
 newbyinterval <- byweekday %>% group_by(interval, weekday) %>% summarise(avg = mean(steps))
 
 ggplot(aes(x = interval, y = avg, col = weekday), data = newbyinterval) + geom_line() + facet_grid(weekday~.) + labs(x = "Interval", y = "Number of steps") + theme_classic()
 
 ```
+
