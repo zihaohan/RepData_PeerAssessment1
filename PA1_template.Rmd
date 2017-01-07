@@ -1,5 +1,7 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "Zihaohan Sang"
+date: "January 7, 2017"
 output: 
   html_document:
     keep_md: true
@@ -8,18 +10,97 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r read_and_processing_data, echo=TRUE}
+require(dplyr)
+rawdata <- read.csv("activity.csv")
+##casue the NA in rawdata set, and the date as variable, so the enxt step is to tidy the data set
+ rawdata$date <- as.Date(rawdata$date)
+ processed <- na.omit(rawdata)
+ head(processed, 10)
+ ##then we can use the processed data set to answer the following questions 
+```
 
 
 ## What is mean total number of steps taken per day?
+Next, Histogram of the total number of steps taken each day
 
+```{r hist_total_steps_per_day, echo=TRUE}
+bydate <- processed %>% group_by(date) %>% summarise(sum = sum(steps))
+
+head(bydate, 10)
+##plot the histogram
+require(ggplot2)
+ggplot(aes(x = sum), data = bydate) + geom_histogram() + labs(x = "Total number of steps per day", y = "frequency", title = "Histogram of The Total Number of Steps \nTaken Each Day") + theme_bw() + theme(plot.title = element_text(hjust = 0.5, vjust = 1, size = rel(1.2), face = "bold"), panel.border = element_blank(), panel.grid = element_blank(), axis.line = element_line(color = "black", size = 0.8))
+```
+Then, Mean and median number of steps taken each day
+
+```{r mean_and_median_number, echo = TRUE}
+summary(bydate$sum)[3:4]
+
+```
 
 
 ## What is the average daily activity pattern?
 
+```{r, echo=TRUE}
+byinterval <- processed %>% group_by(interval) %>% summarise(avg = mean(steps))
+
+head(byinterval)
+
+ggplot(aes(x = interval, y = avg), data =  byinterval) + geom_line() +labs(x = "Interval", y = "Average number of steps taken") + theme_classic()
+```
+
+
+```{r intervals_with_max_steps, echo = TRUE}
+byinterval[which.max(byinterval$avg), ]
+```
+
 
 
 ## Imputing missing values
+```{r imputing_na, echo=TRUE}
 
+## caluculate the total number of NA 
+sum(is.na(rawdata))
+
+## in this case, I will use the average steps of intervals to replace NA of original data set
+na_set <-rawdata[which(is.na(rawdata$steps)),]
+
+for (i in 1:nrow(na_set)){
+        na_set$steps[i] <- byinterval$avg[byinterval$interval == na_set$interval[i]]
+}
+
+##form new dataset without NA
+newdata <- rbind(na_set, processed)
+
+##regroup the dataset based on date
+newbyday <- newdata %>% group_by(date) %>% summarise(sum = sum(steps))
+
+##histogram
+hist(newbyday$sum, xlab = "total number of steps taken", main = "Histogram of the total number of steps taken each day")
+
+## the mean and median of the total number of steps taken per day
+
+summary(newbyday$sum)[3:4]
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r activity_weekday_pattern, echo = TRUE}
+byweekday <- newdata %>% mutate(wday = weekdays(date), weekday = 0)
+
+for (i in 1:nrow(byweekday)){
+        if (byweekday$wday[i] %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")){
+                byweekday$weekday[i] <- "weekday"
+        }else{
+                byweekday$weekday[i] <- "weekend"
+        }
+}
+
+head(byweekday, 10)
+
+newbyinterval <- byweekday %>% group_by(interval, weekday) %>% summarise(avg = mean(steps))
+
+ggplot(aes(x = interval, y = avg, col = weekday), data = newbyinterval) + geom_line() + facet_grid(weekday~.) + labs(x = "Interval", y = "Number of steps") + theme_classic()
+
+```
